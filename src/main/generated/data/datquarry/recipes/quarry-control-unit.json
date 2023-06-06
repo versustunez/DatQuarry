@@ -1,26 +1,25 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "#i#",
-    "GPG",
-    "#i#"
-  ],
   "key": {
     "#": {
       "item": "minecraft:redstone"
-    },
-    "i": {
-      "item": "minecraft:iron_ingot"
     },
     "G": {
       "item": "minecraft:glass"
     },
     "P": {
       "item": "minecraft:piston"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
     }
   },
+  "pattern": [
+    "#i#",
+    "GPG",
+    "#i#"
+  ],
   "result": {
-    "item": "datquarry:quarry-control-unit",
-    "count": 1
+    "item": "datquarry:quarry-control-unit"
   }
 }

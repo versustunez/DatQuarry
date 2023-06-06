@@ -11,7 +11,7 @@ class LanguageProvider(dataGenerator: FabricDataGenerator?) : FabricLanguageProv
             translationBuilder.add(it.block, it.showName)
         }
         BasicItemFactory.itemList.forEach {
-            translationBuilder.add(it.item, it.name)
+            translationBuilder.add(it.item.item, it.name)
         }
         translationBuilder.add(BasicItemFactory.modItemGroup, "DatQuarry")
     }

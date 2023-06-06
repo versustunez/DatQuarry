@@ -8,8 +8,8 @@
 		"VersusTuneZ"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/versustunez/DatQuarry",
+		"sources": "https://github.com/versustunez/DatQuarry"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/datquarry/icon.png",

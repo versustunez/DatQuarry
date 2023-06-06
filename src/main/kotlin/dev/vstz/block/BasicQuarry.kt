@@ -1,18 +1,15 @@
 package dev.vstz.block
 
 import dev.vstz.State
-import dev.vstz.item.BasicItemFactory
-import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricBlockSettings
+import dev.vstz.generator.CraftingObject
 import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
 import net.minecraft.block.Block
 import net.minecraft.block.BlockEntityProvider
 import net.minecraft.block.BlockState
-import net.minecraft.block.Material
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityTicker
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.BlockItem
 import net.minecraft.item.ItemPlacementContext
 import net.minecraft.state.StateManager
 import net.minecraft.util.ActionResult
@@ -95,19 +92,28 @@ class BasicQuarry(settings: Settings?) : Block(settings), BlockEntityProvider {
 
     object Instance {
         val Quarry = BasicQuarry(BlockFactory.getBasicSettings())
-        val QuarryItem = BlockItem(Quarry, BasicItemFactory.createSettings(1))
+        val QuarryItem = CraftableBlockItem.create(
+            Quarry,
+            CraftingObject("IRISCBIRI", 1)
+                .add('I', "minecraft:iron_ingot")
+                .add('R', "minecraft:redstone")
+                .add('B', "datquarry:energy-core")
+                .add('S', "datquarry:quarry-control-unit")
+                .add('C', "datquarry:quarry-core"),
+            1,
+        )
         val Entity = FabricBlockEntityTypeBuilder.create(BasicQuarryEntity::create, Quarry).build()!!
 
         fun create() {
             Registry.register(Registry.BLOCK, Identifier(State.modID, "quarry"), Quarry)
-            Registry.register(Registry.ITEM, Identifier(State.modID, "quarry"), QuarryItem)
+            Registry.register(Registry.ITEM, Identifier(State.modID, "quarry"), QuarryItem.item)
             Registry.register(
                 Registry.BLOCK_ENTITY_TYPE,
                 Identifier(State.modID, "quarry_entity"),
                 Entity
             )
             EnergyStorage.SIDED.registerForBlockEntity(
-                { myBlockEntity, direction -> myBlockEntity.energyStorage },
+                { myBlockEntity, _ -> myBlockEntity.energyStorage },
                 Entity
             )
 

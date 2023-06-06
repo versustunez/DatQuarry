@@ -3,13 +3,12 @@ package dev.vstz.block
 import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricBlockSettings
 import net.minecraft.block.Block
 import net.minecraft.block.Material
-import net.minecraft.item.BlockItem
 
-data class RegisteredBlock(val block: Block, val item: BlockItem, val showName: String = "")
+data class RegisteredBlock(val block: Block, val item: CraftableBlockItem, val showName: String = "")
 
 object BlockFactory {
     val registery = ArrayList<RegisteredBlock>()
-    fun registerBasicBlock(block: Block, item: BlockItem, showName: String = "") {
+    fun registerBasicBlock(block: Block, item: CraftableBlockItem, showName: String = "") {
         registery.add(RegisteredBlock(block, item, showName))
     }
 

@@ -1,1 +1,11 @@
-// 1.19.2	2023-06-06T16:42:54.518063585	Recipes
+// 1.19.2	2023-06-06T19:36:56.729224662	Recipes
+d0e8f520b088107d468328c0328e139d12659f9f data/datquarry/recipes/energy-core.json
+f14364f6b211e24971fea968e9dc41530599ffe4 data/datquarry/advancements/recipes/datquarry.dat-quarry/energy-core.json
+babdb10785ca133f16fe60fba1e78b0a92be0695 data/datquarry/recipes/quarry-core.json
+d196f5c764fe3734cef15c56d0e5b5b9312fb4cf data/datquarry/advancements/recipes/datquarry.dat-quarry/quarry-core.json
+f1603d1e21a2937c27c2175b7fe21a7616ca0b89 data/datquarry/advancements/recipes/datquarry.dat-quarry/quarry-battery.json
+2f1dfe0810398de52a78c0d8ae96792e5ab6b6c9 data/datquarry/recipes/silk-cloth.json
+d0c39b41b254e22678dba6b90bbf8009a566ff77 data/datquarry/advancements/recipes/datquarry.dat-quarry/silk-cloth.json
+0af25ec70739b8b239818535d8388250f6c94851 data/datquarry/advancements/recipes/datquarry.dat-quarry/quarry-control-unit.json
+d85ea06977dea0c49e3e29200d36ea685cb71c72 data/datquarry/recipes/quarry-control-unit.json
+6d55dba9ae8ab596d8621a36bfa27f8c5154ab45 data/datquarry/recipes/quarry-battery.json

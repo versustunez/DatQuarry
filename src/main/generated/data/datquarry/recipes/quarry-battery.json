@@ -1,26 +1,25 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " # ",
-    "cRc",
-    "cic"
-  ],
   "key": {
     "#": {
       "item": "minecraft:heavy_weighted_pressure_plate"
     },
-    "c": {
-      "item": "minecraft:copper_ingot"
-    },
     "R": {
       "item": "minecraft:redstone"
+    },
+    "c": {
+      "item": "minecraft:copper_ingot"
     },
     "i": {
       "item": "minecraft:iron_ingot"
     }
   },
+  "pattern": [
+    " # ",
+    "cRc",
+    "cic"
+  ],
   "result": {
-    "item": "datquarry:quarry-battery",
-    "count": 1
+    "item": "datquarry:quarry-battery"
   }
 }

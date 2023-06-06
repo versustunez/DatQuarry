@@ -1,23 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "ere",
-    "rcr",
-    "ere"
-  ],
   "key": {
+    "c": {
+      "item": "datquarry:quarry-control-unit"
+    },
     "e": {
       "item": "datquarry:energy-core"
     },
     "r": {
       "item": "minecraft:redstone"
-    },
-    "c": {
-      "item": "datquarry:quarry-control-unit"
     }
   },
+  "pattern": [
+    "ere",
+    "rcr",
+    "ere"
+  ],
   "result": {
-    "item": "datquarry:speedup_2",
-    "count": 1
+    "item": "datquarry:speedup_2"
   }
 }

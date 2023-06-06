@@ -1,23 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "minecraft:redstone"
+    },
+    "P": {
+      "item": "datquarry:quarry-battery"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
   "pattern": [
     "#i#",
     "iPi",
     "#i#"
   ],
-  "key": {
-    "#": {
-      "item": "minecraft:redstone"
-    },
-    "i": {
-      "item": "minecraft:iron_ingot"
-    },
-    "P": {
-      "item": "datquarry:quarry-battery"
-    }
-  },
   "result": {
-    "item": "datquarry:energy-core",
-    "count": 1
+    "item": "datquarry:energy-core"
   }
 }

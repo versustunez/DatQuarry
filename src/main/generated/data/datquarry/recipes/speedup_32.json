@@ -1,10 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "iri",
-    "s s",
-    "iri"
-  ],
   "key": {
     "i": {
       "item": "minecraft:diamond"
@@ -16,8 +11,12 @@
       "item": "datquarry:speedup_16"
     }
   },
+  "pattern": [
+    "iri",
+    "s s",
+    "iri"
+  ],
   "result": {
-    "item": "datquarry:speedup_32",
-    "count": 1
+    "item": "datquarry:speedup_32"
   }
 }
