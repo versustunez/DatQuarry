@@ -3,29 +3,31 @@ package dev.vstz.block
 import dev.vstz.State
 import dev.vstz.generator.CraftingObject
 import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
-import net.minecraft.block.Block
-import net.minecraft.block.BlockEntityProvider
-import net.minecraft.block.BlockState
+import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityTicker
 import net.minecraft.block.entity.BlockEntityType
+import net.minecraft.data.client.*
+import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemPlacementContext
+import net.minecraft.item.ItemStack
 import net.minecraft.state.StateManager
-import net.minecraft.util.ActionResult
-import net.minecraft.util.Hand
-import net.minecraft.util.Identifier
+import net.minecraft.state.property.Properties
+import net.minecraft.util.*
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
-import net.minecraft.state.property.Properties
 import net.minecraft.world.WorldAccess
 import team.reborn.energy.api.EnergyStorage
 
 
-class BasicQuarry(settings: Settings?) : Block(settings), BlockEntityProvider {
+class BasicQuarry(settings: Settings?) : Block(settings), BlockEntityProvider, BlockStateModelProvider {
+    companion object {
+        val FACING = Properties.HORIZONTAL_FACING
+    }
 
     // Deprecated for calling
     override fun onUse(
@@ -46,14 +48,35 @@ class BasicQuarry(settings: Settings?) : Block(settings), BlockEntityProvider {
         return ActionResult.CONSUME
     }
 
-
-    override fun getPlacementState(ctx: ItemPlacementContext?): BlockState? {
-        return defaultState.with(Properties.FACING, Direction.NORTH)
+    override fun appendProperties(builder: StateManager.Builder<Block, BlockState>?) {
+        builder?.add(FACING)
     }
 
-    override fun appendProperties(builder: StateManager.Builder<Block, BlockState>?) {
-        super.appendProperties(builder)
-        builder?.add(Properties.FACING)
+
+    override fun onPlaced(
+        world: World?,
+        pos: BlockPos?,
+        state: BlockState?,
+        placer: LivingEntity?,
+        itemStack: ItemStack?
+    ) {
+        super.onPlaced(world, pos, state, placer, itemStack)
+        world!!.setBlockState(pos, world.getBlockState(pos).with(FACING, placer!!.horizontalFacing.opposite))
+    }
+
+    override fun rotate(state: BlockState?, rotation: BlockRotation?): BlockState {
+        State.logger.error("Rotating quarries now")
+        return (state!!.with(
+            HorizontalFacingBlock.FACING, rotation!!.rotate(
+                state.get(HorizontalFacingBlock.FACING)
+            )
+        ) as BlockState)
+    }
+
+
+    override fun mirror(state: BlockState, mirror: BlockMirror): BlockState? {
+        State.logger.error("Mirroring quarries now")
+        return state.rotate(mirror.getRotation(state.get(HorizontalFacingBlock.FACING)))
     }
 
     override fun createBlockEntity(pos: BlockPos?, state: BlockState?): BlockEntity {
@@ -119,5 +142,15 @@ class BasicQuarry(settings: Settings?) : Block(settings), BlockEntityProvider {
 
             BlockFactory.registerBasicBlock(Quarry, QuarryItem, "Quarry")
         }
+    }
+
+    override fun generateBlockStateModel(blockStateModelGenerator: BlockStateModelGenerator) {
+        val factory = TexturedModel.makeFactory({ block: Block? -> TextureMap.all(block) }, Models.ORIENTABLE)
+        val texturedModel = factory.get(this)
+        texturedModel.textures {
+            it.put(TextureKey.TOP, Identifier("datquarry", "block/quarry-side"))
+            it.put(TextureKey.SIDE, Identifier("datquarry", "block/quarry-side"))
+        }
+        blockStateModelGenerator.registerNorthDefaultHorizontalRotatable(this, texturedModel.textures)
     }
 }

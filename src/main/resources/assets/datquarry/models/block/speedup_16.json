@@ -1,8 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "up": "datquarry:block/quarry-side",
-    "down": "datquarry:block/quarry-side",
-    "all": "datquarry:block/speedup_16"
-  }
-}

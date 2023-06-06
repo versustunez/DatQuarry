@@ -52,7 +52,7 @@ class BasicQuarryEntity(pos: BlockPos?, state: BlockState?) : BlockEntity(BasicQ
         }
     }
 
-    private fun _tick(world: World, state: BlockState, pos: BlockPos) {
+    private fun _tick(world: World, ignoreState: BlockState, ignore: BlockPos) {
         if (world.isClient) return
         if (skippingTicks < getTickSkipNeeded()) {
             skippingTicks++
@@ -82,15 +82,13 @@ class BasicQuarryEntity(pos: BlockPos?, state: BlockState?) : BlockEntity(BasicQ
         markDirty()
     }
 
-    // @Fixme: I'm still not sure if this is enough power usage per block.
-    //        the quarry is kinda op in early game and can be used with a single generator for too long.
-    //        Maybe it's better to increase the usage to 64 but only maybe.
     private fun getPowerNeeded(): Int {
         return 64 * if (silkBlock == null) 1 else 2
     }
 
     private fun getTickSkipNeeded(): Int {
-        return ((-32 + tickRate) * -1) / 2
+        val ticks = ((-32 + tickRate) * -1) / 2
+        return 0.coerceAtLeast(ticks)
     }
 
     private fun insertBlockIntoChest(blockState: BlockState): Boolean {
@@ -148,7 +146,7 @@ class BasicQuarryEntity(pos: BlockPos?, state: BlockState?) : BlockEntity(BasicQ
     private fun createHarvestBlock(): BlockState? {
         if (internalWorld == null) {
             internalWorld = WorldGenerator.createNewWorld(world!!)
-            skippingTicks = 100
+            skippingTicks -= 100
         }
         if (internalWorld == null) {
             throw IllegalStateException("Internal world is null")
@@ -196,34 +194,40 @@ class BasicQuarryEntity(pos: BlockPos?, state: BlockState?) : BlockEntity(BasicQ
             possibleChest
         }
 
-        val possibleSpeedBlock = world!!.getBlockState(BlockPos(pos.x + 1, pos.y, pos.z)).block
-        if (possibleSpeedBlock is SpeedupBlock) {
-            speedBlock = possibleSpeedBlock
-            tickRate = 1 * possibleSpeedBlock.factor
-        } else {
-            speedBlock = null
-            tickRate = 1
-        }
+        val directNeighbor = arrayOf(
+            BlockPos(pos.x + 1, pos.y, pos.z),
+            BlockPos(pos.x - 1, pos.y, pos.z),
+            BlockPos(pos.x, pos.y, pos.z + 1),
+            BlockPos(pos.x, pos.y, pos.z - 1),
+        )
 
-        val possibleSilkBlock = world!!.getBlockState(BlockPos(pos.x - 1, pos.y, pos.z)).block
-        silkBlock = if (possibleSilkBlock is SilkBlock) {
-            possibleSilkBlock
-        } else {
-            null
+        var speed = 0
+        var silkFound: SilkBlock? = null
+
+        directNeighbor.forEach {
+            val possibleSpeedBlock = world!!.getBlockState(it).block
+            if (possibleSpeedBlock is SpeedupBlock) {
+                speed += 1 * possibleSpeedBlock.factor
+            }
+            val possibleSilkBlock = world!!.getBlockState(it).block
+            if (possibleSilkBlock is SilkBlock) {
+                silkFound = possibleSilkBlock
+            }
         }
+        tickRate = speed
+        silkBlock = silkFound
         isInit = true
     }
 
     fun getLiteral(): Text {
         if (getIsInvalid()) {
-            return Text.literal("[Invalid Quarry... Missing Chest at Top]")
+            return Text.literal("[Invalid Quarry... Missing Chest at Top]").setStyle(Style.EMPTY.withColor(0xff3232))
         }
         val powerNeeded = getPowerNeeded()
         return Text.literal(
-            "Energy: ${energyStorage.amount}E | " +
-                    "Power Needed: ${powerNeeded}E | " +
-                    "Position: X=${farmingPosition.x}, Y=${farmingPosition.y}, Z=${farmingPosition.z} | " +
-                    "Speed: $tickRate"
-        ).setStyle(Style.EMPTY.withColor(0xff3232))
+            "Energy: ${energyStorage.amount}E - ${powerNeeded}/T | " +
+                    "Pos(X:${farmingPosition.x}, Y:${farmingPosition.y}, Z:${farmingPosition.z}) | " +
+                    "Ticks: $tickRate | ${getTickSkipNeeded()}"
+        ).setStyle(Style.EMPTY.withColor(0xff0089))
     }
 }
