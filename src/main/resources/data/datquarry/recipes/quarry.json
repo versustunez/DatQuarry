@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IRI",
+    "SCB",
+    "IRI"
+  ],
+  "key": {
+    "C": {
+      "item": "datquarry:quarry-core"
+    },
+    "S": {
+      "item": "datquarry:quarry-control-unit"
+    },
+    "B": {
+      "item": "datquarry:energy-core"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "datquarry:quarry",
+    "count": 1
+  }
+}

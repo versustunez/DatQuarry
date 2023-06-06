@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "dev.vstz.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "DatQuarryMixin",
+    "MinecraftServerAccess"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}

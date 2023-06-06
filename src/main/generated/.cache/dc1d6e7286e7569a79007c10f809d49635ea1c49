@@ -1,0 +1,8 @@
+// 1.19.2	2023-06-06T16:42:54.517359185	Block Loot Tables
+940adf386ebf05ed5505783d644e108e2cd81358 data/datquarry/loot_tables/blocks/speedup_2.json
+ec6c5d92e931010968d9d5ad59625a195fe5feae data/datquarry/loot_tables/blocks/quarry.json
+5fdfcf2e6b8699f7f0bc77b9e85804b96fc9d865 data/datquarry/loot_tables/blocks/speedup_16.json
+aa89b391a8c0c0995fea4290db8309ed11ac2b64 data/datquarry/loot_tables/blocks/speedup_32.json
+b3ed73a4726730d1389d92f9c72b361009cd19fc data/datquarry/loot_tables/blocks/silk.json
+4a0c7b0c9a8f39decb1d849191ddae141b238dd4 data/datquarry/loot_tables/blocks/speedup_4.json
+bb5eaceb217e0a110e8d006c7a4fd522e825075f data/datquarry/loot_tables/blocks/speedup_8.json
