@@ -2,13 +2,9 @@ package dev.vstz.block
 
 import dev.vstz.State
 import dev.vstz.generator.CraftingObject
-import dev.vstz.item.BasicItemFactory
 import net.minecraft.block.Block
 import net.minecraft.data.client.*
-import net.minecraft.item.BlockItem
-import net.minecraft.state.property.Properties
 import net.minecraft.util.Identifier
-import net.minecraft.util.math.Direction
 import net.minecraft.util.registry.Registry
 
 class SpeedupBlock(settings: Settings?, val factor: Int, val name: String) : Block(settings), BlockStateModelProvider {
@@ -54,7 +50,7 @@ class SpeedupBlock(settings: Settings?, val factor: Int, val name: String) : Blo
         val factory = TexturedModel.makeFactory({ block: Block? -> TextureMap.all(block) }, Models.CUBE_BOTTOM_TOP)
         val texturedModel = factory.get(this)
         texturedModel.textures {
-            it.put(TextureKey.BOTTOM, Identifier("datquarry", "block/speedup-side"))
+            it.put(TextureKey.BOTTOM, Identifier("datquarry", "block/quarry-side"))
             it.put(TextureKey.TOP, Identifier("datquarry", "block/quarry-side"))
             it.put(TextureKey.SIDE, Identifier("datquarry", "block/${name}"))
         }

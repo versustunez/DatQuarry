@@ -10,8 +10,8 @@ import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.data.client.*
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.ItemPlacementContext
 import net.minecraft.item.ItemStack
+import net.minecraft.screen.ScreenHandler
 import net.minecraft.state.StateManager
 import net.minecraft.state.property.Properties
 import net.minecraft.util.*
@@ -24,7 +24,7 @@ import net.minecraft.world.WorldAccess
 import team.reborn.energy.api.EnergyStorage
 
 
-class BasicQuarry(settings: Settings?) : Block(settings), BlockEntityProvider, BlockStateModelProvider {
+class BasicQuarry(settings: Settings?) : BlockWithEntity(settings), BlockEntityProvider, BlockStateModelProvider {
     companion object {
         val FACING = Properties.HORIZONTAL_FACING
     }
@@ -39,14 +39,17 @@ class BasicQuarry(settings: Settings?) : Block(settings), BlockEntityProvider, B
         hit: BlockHitResult?
     ): ActionResult {
         if (world != null && !world.isClient) {
-            val entity = world.getBlockEntity(pos) as BasicQuarryEntity
-            player?.sendMessage(
-                entity.getLiteral(),
-                true
-            )
+            val screenHandlerFactory = state!!.createScreenHandlerFactory(world, pos)
+            if (screenHandlerFactory != null)
+                player!!.openHandledScreen(screenHandlerFactory)
         }
-        return ActionResult.CONSUME
+        return ActionResult.SUCCESS
     }
+
+    override fun getRenderType(state: BlockState?): BlockRenderType {
+        return BlockRenderType.MODEL
+    }
+
 
     override fun appendProperties(builder: StateManager.Builder<Block, BlockState>?) {
         builder?.add(FACING)
@@ -92,13 +95,18 @@ class BasicQuarry(settings: Settings?) : Block(settings), BlockEntityProvider, B
             return null
         }
         return BlockEntityTicker { world1: World?, pos: BlockPos?, state1: BlockState?, be: BlockEntity? ->
-            BasicQuarryEntity.tick(
-                world1!!,
-                pos!!,
-                state1!!,
-                be as BasicQuarryEntity
-            )
+            if (be is BasicQuarryEntity) {
+                be.tick(world1!!)
+            }
         }
+    }
+
+    override fun hasComparatorOutput(state: BlockState?): Boolean {
+        return true
+    }
+
+    override fun getComparatorOutput(state: BlockState?, world: World, pos: BlockPos?): Int {
+        return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos))
     }
 
     override fun getStateForNeighborUpdate(
@@ -125,14 +133,14 @@ class BasicQuarry(settings: Settings?) : Block(settings), BlockEntityProvider, B
                 .add('C', "datquarry:quarry-core"),
             1,
         )
-        val Entity = FabricBlockEntityTypeBuilder.create(BasicQuarryEntity::create, Quarry).build()!!
+        val Entity = FabricBlockEntityTypeBuilder.create(::BasicQuarryEntity, Quarry).build()!!
 
         fun create() {
             Registry.register(Registry.BLOCK, Identifier(State.modID, "quarry"), Quarry)
             Registry.register(Registry.ITEM, Identifier(State.modID, "quarry"), QuarryItem.item)
             Registry.register(
                 Registry.BLOCK_ENTITY_TYPE,
-                Identifier(State.modID, "quarry_entity"),
+                Identifier(State.modID, "quarry"),
                 Entity
             )
             EnergyStorage.SIDED.registerForBlockEntity(

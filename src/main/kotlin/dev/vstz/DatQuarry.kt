@@ -2,6 +2,8 @@ package dev.vstz
 
 import dev.vstz.block.BlockFactory
 import dev.vstz.item.BasicItemFactory
+import dev.vstz.screen.Screens
+import dev.vstz.world.QuarryChunkInit
 import net.fabricmc.api.ModInitializer
 
 object DatQuarry : ModInitializer {
@@ -9,13 +11,7 @@ object DatQuarry : ModInitializer {
         State.logger.info("Initializing Dat Quarry")
         BasicItemFactory.instantiate()
         BlockFactory.instantiate()
-    }
-
-    fun onCleanup() {
-        // This is metadata... we don't need any of that for the real game.
-        if (!State.isGeneration) {
-            BlockFactory.registery.clear()
-            BasicItemFactory.itemList.clear()
-        }
+        QuarryChunkInit.onInitialize()
+        Screens.instantiate()
     }
 }

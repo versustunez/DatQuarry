@@ -1,4 +1,4 @@
-// 1.19.2	2023-06-06T21:51:14.401516139	Models
+// 1.19.2	2023-06-09T21:17:27.263328441	Models
 1bd2332b19b796af7ca99d3a4c2d144bca92776d assets/datquarry/blockstates/speedup_32.json
 cade2e7260cd82d3987476055299502ad654c6aa assets/datquarry/models/item/speedup_8.json
 b2830721b3f1a6fe4d9a1c80a52b1b9fc3ef92d5 assets/datquarry/models/item/quarry-control-unit.json
@@ -8,8 +8,8 @@ b423d3a1172664c7fe012461ad44611744c862a7 assets/datquarry/models/item/silk.json
 5fbcb5b14bfbf822e78ca2c4ffe00d31c336488b assets/datquarry/blockstates/speedup_16.json
 30d92c218edb4b4beaa9694d14698ea1b9e0a5e2 assets/datquarry/models/item/speedup_2.json
 9d12f000d8fabf85a4652be77028e2a5fed20049 assets/datquarry/blockstates/speedup_2.json
-e8b56e389689199ffe883682de5d1a29758fcfa8 assets/datquarry/models/block/speedup_16.json
-f8b3cdadd45775b597cd3c4ca0f9fbef1fc370e0 assets/datquarry/models/block/speedup_4.json
+367e2b04d40f537869c156f9a437509a4e518fbf assets/datquarry/models/block/speedup_16.json
+7de5ffaf793585778e3a342191c1240fcec046b3 assets/datquarry/models/block/speedup_4.json
 deacf17d45b622920f1000fab4bd3cbddaeb1399 assets/datquarry/blockstates/silk.json
 b3076c5f8595749d145e0983e1b524c192f56c42 assets/datquarry/models/block/quarry.json
 3252ba0a55f57876debd0e0eff41222bb5ea9a82 assets/datquarry/models/item/quarry.json
@@ -17,9 +17,9 @@ b3076c5f8595749d145e0983e1b524c192f56c42 assets/datquarry/models/block/quarry.js
 e56bcf4715ec64e7ea0fe22ea3418fb07d8e0626 assets/datquarry/blockstates/quarry.json
 023f5dfb1cc0a0b967a6a2617f6958340d7c17e2 assets/datquarry/models/item/quarry-core.json
 80b2aaf786578c0c395dae067f7d11c573ed8fe9 assets/datquarry/models/item/speedup_4.json
-8f72cac20600680f6e9649729c210f5185f06009 assets/datquarry/models/block/speedup_2.json
-b79b56693ed5f11f992d1606c5c75b45fe15aa5a assets/datquarry/models/block/speedup_8.json
-60d005f7da96cabd6dbace79c8c728484cf2a603 assets/datquarry/models/block/speedup_32.json
+8a87cc5b540c36a89055bd51a214d8dc6c4821a0 assets/datquarry/models/block/speedup_2.json
+977183134e60941354727c6bf202d7d51185f6fe assets/datquarry/models/block/speedup_8.json
+e44d06524835a0de737285478954dd6c6d7109fe assets/datquarry/models/block/speedup_32.json
 c2d0ee2840dd7b8273858faf2b5d954efbeb639e assets/datquarry/blockstates/speedup_8.json
 20ac7dfd9b3cd8b89bd3ddd5d94eb4700e7775d3 assets/datquarry/blockstates/speedup_4.json
 feea7328e2b86010eac8c1c4a0c8b20fa0840010 assets/datquarry/models/item/speedup_32.json

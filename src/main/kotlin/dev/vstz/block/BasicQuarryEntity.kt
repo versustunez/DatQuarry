@@ -1,32 +1,58 @@
 package dev.vstz.block
 
 import dev.vstz.LootUtils
-import dev.vstz.world.WorldGenerator
+import dev.vstz.State
+import dev.vstz.screen.QuarryScreenHandler
+import dev.vstz.world.QuarryChunk
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.ChestBlockEntity
+import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.text.Style
+import net.minecraft.screen.NamedScreenHandlerFactory
+import net.minecraft.screen.PropertyDelegate
+import net.minecraft.screen.ScreenHandler
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 import team.reborn.energy.api.base.SimpleEnergyStorage
-import net.minecraft.util.registry.Registry
 
-class BasicQuarryEntity(pos: BlockPos?, state: BlockState?) : BlockEntity(BasicQuarry.Instance.Entity, pos, state) {
-    private var farmingPosition = BlockPos(0, 64, 0)
+
+class BasicQuarryEntity(pos: BlockPos?, state: BlockState?) : BlockEntity(BasicQuarry.Instance.Entity, pos, state),
+    NamedScreenHandlerFactory {
     private var skippingTicks = 0
 
     private var chestEntity: ChestBlockEntity? = null
-    private var speedBlock: SpeedupBlock? = null
     private var silkBlock: SilkBlock? = null
 
     private var tickRate = 1
 
     private var isInit = false
+    val quarryChunk = QuarryChunk()
+
+    class QuarryPropertyDelegate(val quarry: BasicQuarryEntity) : PropertyDelegate {
+        override fun get(index: Int): Int {
+            when (index) {
+                0 -> return quarry.energyStorage.amount.toInt()
+                1 -> return quarry.quarryChunk.amount
+            }
+            return 0
+        }
+
+        override fun set(index: Int, value: Int) {
+        }
+
+        override fun size(): Int {
+            return 2
+        }
+    }
+
+    private val propertyDelegate = QuarryPropertyDelegate(this)
 
 
     private fun getIsInvalid(): Boolean {
@@ -34,60 +60,53 @@ class BasicQuarryEntity(pos: BlockPos?, state: BlockState?) : BlockEntity(BasicQ
     }
 
     // Store a SimpleEnergyStorage in the block entity class.
-    val energyStorage: SimpleEnergyStorage = object : SimpleEnergyStorage(10000, 10000, 0) {
+    val energyStorage: SimpleEnergyStorage = object : SimpleEnergyStorage(MAX_ENERGY, 100000, 0) {
         override fun onFinalCommit() {
             markDirty()
         }
     }
 
     companion object {
-        var internalWorld: World? = null
+        val MAX_ENERGY = 10000L
         var pickaxeItem = Registry.ITEM.get(Identifier("minecraft", "netherite_pickaxe"))
-        fun create(pos: BlockPos?, state: BlockState?): BasicQuarryEntity {
-            return BasicQuarryEntity(pos, state)
-        }
-
-        fun tick(world: World, pos: BlockPos, state: BlockState, be: BasicQuarryEntity) {
-            be._tick(world, state, pos)
-        }
     }
 
-    private fun _tick(world: World, ignoreState: BlockState, ignore: BlockPos) {
+    fun tick(world: World) {
         if (world.isClient) return
+        if (!isInit) {
+            State.logger.info("Initializing Quarry Entity")
+            updateNeighborBlocks()
+        }
         if (skippingTicks < getTickSkipNeeded()) {
             skippingTicks++
             return
         }
         skippingTicks = 0
-
-        if (!isInit) updateNeighborBlocks()
         val powerNeeded = getPowerNeeded()
+        if (energyStorage.amount < powerNeeded) {
+            return
+        }
+        energyStorage.amount -= powerNeeded
         for (i in 0 until tickRate) {
-            if (energyStorage.amount < powerNeeded) {
-                break
-            }
-            energyStorage.amount -= powerNeeded
-            val blockState = createHarvestBlock() ?: continue
+            val blockState = quarryChunk.nextBlockState
             if (blockState.isAir || !pickaxeItem.isSuitableFor(blockState)) {
-                advanceFarmingPosition()
-                continue
+                return
             }
             if (silkBlock == null) {
-                if (!insertBlockLootIntoChest(blockState)) continue
+                insertBlockLootIntoChest(blockState)
             } else {
-                if (!insertBlockIntoChest(blockState)) continue
+                insertBlockIntoChest(blockState)
             }
-            advanceFarmingPosition()
         }
         markDirty()
     }
 
     private fun getPowerNeeded(): Int {
-        return 64 * if (silkBlock == null) 1 else 2
+        return (64 * if (silkBlock == null) 1 else 2) * (tickRate * 1.1).toInt()
     }
 
     private fun getTickSkipNeeded(): Int {
-        val ticks = ((-32 + tickRate) * -1) / 2
+        val ticks = ((-32 + tickRate) * -1)
         return 0.coerceAtLeast(ticks)
     }
 
@@ -105,7 +124,7 @@ class BasicQuarryEntity(pos: BlockPos?, state: BlockState?) : BlockEntity(BasicQ
 
     private fun insertBlockLootIntoChest(blockState: BlockState): Boolean {
         if (chestEntity == null) return false
-        val loot = LootUtils.getLoot(world!!, blockState, farmingPosition)
+        val loot = LootUtils.getLoot(world!!, blockState, BlockPos(0, 0, 0))
         var added = loot.isNullOrEmpty()
         loot?.forEach {
             val spot = findSpotOfItemStack(it)
@@ -143,42 +162,14 @@ class BasicQuarryEntity(pos: BlockPos?, state: BlockState?) : BlockEntity(BasicQ
         return -1
     }
 
-    private fun createHarvestBlock(): BlockState? {
-        if (internalWorld == null) {
-            internalWorld = WorldGenerator.createNewWorld(world!!)
-            skippingTicks -= 100
-        }
-        if (internalWorld == null) {
-            throw IllegalStateException("Internal world is null")
-        }
-        return internalWorld!!.getBlockState(farmingPosition)
-    }
-
-    private fun advanceFarmingPosition() {
-        farmingPosition = BlockPos(farmingPosition.x, farmingPosition.y - 1, farmingPosition.z)
-        if (farmingPosition.y == -64) {
-            farmingPosition = BlockPos(farmingPosition.x + 1, 64, farmingPosition.z)
-        }
-        if (farmingPosition.x > Int.MAX_VALUE - 10) {
-            farmingPosition = BlockPos(0, 64, farmingPosition.z + 1)
-        }
-        if (farmingPosition.z > Int.MAX_VALUE - 10) {
-            farmingPosition = BlockPos(0, 64, 0)
-        }
-    }
-
 
     override fun readNbt(nbt: NbtCompound) {
         energyStorage.amount = nbt.getLong("energy")
-        farmingPosition = BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z"))
         super.readNbt(nbt)
     }
 
     override fun writeNbt(nbt: NbtCompound) {
         nbt.putLong("energy", energyStorage.amount)
-        nbt.putInt("x", farmingPosition.x)
-        nbt.putInt("y", farmingPosition.y)
-        nbt.putInt("z", farmingPosition.z)
         super.writeNbt(nbt)
     }
 
@@ -201,7 +192,7 @@ class BasicQuarryEntity(pos: BlockPos?, state: BlockState?) : BlockEntity(BasicQ
             BlockPos(pos.x, pos.y, pos.z - 1),
         )
 
-        var speed = 0
+        var speed = 1
         var silkFound: SilkBlock? = null
 
         directNeighbor.forEach {
@@ -219,15 +210,11 @@ class BasicQuarryEntity(pos: BlockPos?, state: BlockState?) : BlockEntity(BasicQ
         isInit = true
     }
 
-    fun getLiteral(): Text {
-        if (getIsInvalid()) {
-            return Text.literal("[Invalid Quarry... Missing Chest at Top]").setStyle(Style.EMPTY.withColor(0xff3232))
-        }
-        val powerNeeded = getPowerNeeded()
-        return Text.literal(
-            "Energy: ${energyStorage.amount}E - ${powerNeeded}/T | " +
-                    "Pos(X:${farmingPosition.x}, Y:${farmingPosition.y}, Z:${farmingPosition.z}) | " +
-                    "Ticks: $tickRate | ${getTickSkipNeeded()}"
-        ).setStyle(Style.EMPTY.withColor(0xff0089))
+    override fun createMenu(syncId: Int, inv: PlayerInventory?, player: PlayerEntity?): ScreenHandler? {
+        return QuarryScreenHandler(syncId, inv!!, propertyDelegate)
+    }
+
+    override fun getDisplayName(): Text {
+        return Text.translatable(cachedState.block.translationKey)
     }
 }
